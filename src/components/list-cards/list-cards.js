@@ -84,7 +84,7 @@ const ListCards = ({ query }) => {
       </Flex>
     );
 
-  if (query !== "" && movies.length === 0) {
+  if (movies.length === 0 && query !== "") {
     return (
       <Flex className="list-cards__empty">По вашему запросу ничего нет...</Flex>
     );

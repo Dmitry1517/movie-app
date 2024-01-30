@@ -23,6 +23,27 @@ const CardItem = ({
 }) => {
   const { guestSessionId } = useContext(Context);
 
+  function formatDate(date) {
+    const months = [
+      "Jan",
+      "Feb",
+      "March",
+      "Apr",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dec",
+    ];
+    const year = new Date(date).getFullYear();
+    const month = months[new Date(date).getMonth()];
+    const day = new Date(date).getDate();
+    return `${month} ${day}, ${year}`;
+  }
+
   const ratingStyle = {
     display: "flex",
     justifyContent: "center",
@@ -97,7 +118,7 @@ const CardItem = ({
               <div style={ratingStyle}>{rating}</div>
             </header>
 
-            <div>{format(releaseDate, "PP")}</div>
+            <div>{formatDate(releaseDate)}</div>
             <Genres genresIds={genresIds} />
             <div>{desc}</div>
           </div>
