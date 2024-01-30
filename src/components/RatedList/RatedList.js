@@ -1,57 +1,61 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-else-return */
-/* eslint-disable prefer-const */
-/* eslint-disable consistent-return */
-/* eslint-disable no-undef */
-/* eslint-disable array-callback-return */
 /* eslint-disable no-console */
-/* eslint-disable react/function-component-definition */
-/* eslint-disable import/no-extraneous-dependencies */
-import React, { useState, useEffect, useCallback } from "react";
-import { List, Flex, Pagination, Modal } from "antd";
-import debounce from "lodash/debounce";
-import CardItem from "../card-item/card-item";
+/* eslint-disable no-else-return */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
+
+import React, { useEffect, useState, useContext } from "react";
+import { Flex, List, Pagination } from "antd";
 import SpinComponent from "../spin-component/spin-component";
+import CardItem from "../card-item/card-item";
 import AlertComponent from "../AlertComponent/AlertComponent";
+import { Context } from "../Context/context";
 import "../../style/list-cards.css";
 import "../../style/pagination.css";
 
-// eslint-disable-next-line react/prop-types
-const ListCards = ({ query }) => {
+export default function RatedList() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const debounceFetch = useCallback(
-    debounce((value, page) => {
-      fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=80f2e1c394f284ce6b859064a45ac6a0&page=${page}&query=${value}`,
-      )
-        .then((response) => {
-          if (response.status >= 200 && response.status <= 299) {
-            return response.json();
-          } else throw new Error();
-        })
-        .then((data) => {
-          console.log(data);
-          setMovies(data.results);
-          setTotal(data.total_results);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-          setShowAlert(true);
-        });
-    }, 2000),
-    [],
-  );
+  const guestSessionId = useContext(Context);
+
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MGYyZTFjMzk0ZjI4NGNlNmI4NTkwNjRhNDVhYzZhMCIsInN1YiI6IjY1YTEyM2FhMTk2OTBjMDEzMThhYzY0MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rMoCg9yFO9XBL_LKXVC_Nb4J4mbjbqQBduC4RzS7pdc",
+    },
+  };
+
+  const getRatedMovies = (id, page) => {
+    fetch(
+      `https://api.themoviedb.org/3/account/{account_id}/rated/movies?api_key=80f2e1c394f284ce6b859064a45ac6a0&page=${page}&guest_session_id=${id}`,
+      options,
+    )
+      .then((response) => {
+        if (response.status >= 200 && response.status <= 299) {
+          return response.json();
+        } else throw new Error();
+      })
+      .then((data) => {
+        console.log(data);
+        setMovies(data.results);
+        setTotal(data.total_results);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        setShowAlert(true);
+      });
+  };
 
   useEffect(() => {
-    debounceFetch(query, currentPage);
-  }, [query, currentPage, debounceFetch]);
+    getRatedMovies(guestSessionId, currentPage);
+  }, [currentPage]);
 
   const onChange = (page) => {
     setLoading(true);
@@ -65,8 +69,8 @@ const ListCards = ({ query }) => {
 
   const shortenDedcription = (text) => {
     const textArray = text.split(" ");
-    if (textArray.length > 15) {
-      return `${textArray.slice(0, 15).join(" ")} ...`;
+    if (textArray.length > 20) {
+      return `${textArray.slice(0, 20).join(" ")} ...`;
     }
     return text;
   };
@@ -77,18 +81,13 @@ const ListCards = ({ query }) => {
         <SpinComponent />
       </Flex>
     );
+
   if (showAlert)
     return (
       <Flex className="list-cards__alert">
         <AlertComponent closeAlert={closeAlert} />
       </Flex>
     );
-
-  if (query !== "" && movies.length === 0) {
-    return (
-      <Flex className="list-cards__empty">По вашему запросу ничего нет...</Flex>
-    );
-  }
 
   return (
     <>
@@ -109,7 +108,7 @@ const ListCards = ({ query }) => {
           <List.Item className="list-cards__item" style={{ padding: 0 }}>
             <CardItem
               key={item.id}
-              id={item.id}
+              rating={item.rating}
               imageUrl={item.poster_path}
               title={item.original_title}
               desc={shortenDedcription(item.overview)}
@@ -134,5 +133,4 @@ const ListCards = ({ query }) => {
       </Flex>
     </>
   );
-};
-export default ListCards;
+}

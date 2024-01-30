@@ -1,0 +1,15 @@
+.list-cards__spiner,
+.list-cards__alert {
+  justify-content: center;
+  padding: 30%;
+}
+
+.list-cards__empty {
+  justify-content: center;
+  color: red;
+}
+
+.list-cards__item {
+  justify-content: center;
+  padding: 0;
+}

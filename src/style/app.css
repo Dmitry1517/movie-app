@@ -1,0 +1,13 @@
+.app {
+  background: #f7f7f7;
+}
+
+.app__content {
+  padding: 0 15%;
+}
+
+.app__inner {
+  background: #fff;
+  min-height: 100vh;
+  padding: 24px;
+}

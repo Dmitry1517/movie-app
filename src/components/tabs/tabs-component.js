@@ -1,11 +1,12 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/function-component-definition */
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-undef */
 import React, { useState } from "react";
-import { Tabs, Flex } from "antd";
+import { Tabs } from "antd";
 import Search from "../search/search";
 import ListCards from "../list-cards/list-cards";
-import SpinComponent from "../spin-component/spin-component";
+import RatedList from "../RatedList/RatedList";
 
 const TabsComponent = () => {
   const [input, setInput] = useState("");
@@ -17,7 +18,11 @@ const TabsComponent = () => {
       tabBarGutter={40}
       defaultActiveKey="1"
       centered
-      style={{ display: "flex" }}
+      tabBarStyle={{
+        width: "165px",
+        margin: "0 auto",
+        marginBottom: "20px",
+      }}
       items={[
         {
           label: "Search",
@@ -32,11 +37,7 @@ const TabsComponent = () => {
         {
           label: "Rated",
           key: 2,
-          children: (
-            <Flex style={{ justifyContent: "center", padding: "30%" }}>
-              <SpinComponent />
-            </Flex>
-          ),
+          children: <RatedList />,
         },
       ]}
     />
