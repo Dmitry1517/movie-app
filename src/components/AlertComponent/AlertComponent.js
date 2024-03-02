@@ -4,16 +4,10 @@
 import React from "react";
 import { Alert, Space } from "antd";
 
-// const onClose = (e) => {
-//   console.log(e, "I was closed.");
-// };
+import "../../style/alert.css";
+
 const AlertComponent = ({ closeAlert }) => (
-  <Space
-    direction="vertical"
-    style={{
-      width: "100%",
-    }}
-  >
+  <Space className="alert" direction="vertical">
     <Alert
       message="ERROR!"
       description="TRY AGAIN LATTER"

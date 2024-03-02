@@ -1,0 +1,15 @@
+.rate {
+  zoom: 0.6;
+}
+
+@media all and (max-width: 1200px) {
+  .rate {
+    zoom: 0.8;
+  }
+}
+
+@media all and (max-width: 525px) {
+  .rate {
+    zoom: 0.6;
+  }
+}

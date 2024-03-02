@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 import TabsComponent from "../tabs/tabs-component";
 import { Context } from "../Context/context";
+import TmdbService from "../../tmdb-service/TmdbService";
 import "../../style/global.css";
 import "../../style/app.css";
 
@@ -20,27 +21,18 @@ const App = () => {
   const [guestSessionId, setGuestSessionId] = useState("");
   const [genres, setGenres] = useState([]);
 
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MGYyZTFjMzk0ZjI4NGNlNmI4NTkwNjRhNDVhYzZhMCIsInN1YiI6IjY1YTEyM2FhMTk2OTBjMDEzMThhYzY0MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rMoCg9yFO9XBL_LKXVC_Nb4J4mbjbqQBduC4RzS7pdc",
-    },
-  };
+  const tmdbService = new TmdbService();
+
   useEffect(() => {
-    fetch(
-      "https://api.themoviedb.org/3/authentication/guest_session/new",
-      options,
-    )
-      .then((response) => response.json())
+    tmdbService
+      .getNewSessionId()
       .then((data) => setGuestSessionId(data.guest_session_id))
       .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
-    fetch("https://api.themoviedb.org/3/genre/movie/list?language=en", options)
-      .then((response) => response.json())
+    tmdbService
+      .getGenres()
       .then((data) => setGenres(data.genres))
       .catch((err) => console.log(err));
   }, []);

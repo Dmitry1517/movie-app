@@ -2,14 +2,28 @@
 /* eslint-disable react/function-component-definition */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Tabs } from "antd";
 import Search from "../search/search";
 import ListCards from "../list-cards/list-cards";
 import RatedList from "../RatedList/RatedList";
+import { Context } from "../Context/context";
+import TmdbService from "../../tmdb-service/TmdbService";
 
 const TabsComponent = () => {
   const [input, setInput] = useState("");
+  const [ratedArray, setRatedArray] = useState([]);
+  const tmdbService = new TmdbService();
+  const { guestSessionId } = useContext(Context);
+
+  const onChangeValue = (id, value) => {
+    tmdbService
+      .setRatingMovie(id, guestSessionId, value)
+      .then((response) => {
+        setRatedArray((prevState) => [...prevState, { id, value }]);
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <Tabs
@@ -30,14 +44,18 @@ const TabsComponent = () => {
           children: (
             <>
               <Search input={input} setInput={setInput} />
-              <ListCards query={input} />
+              <ListCards
+                query={input}
+                onChangeValue={onChangeValue}
+                ratedArray={ratedArray}
+              />
             </>
           ),
         },
         {
           label: "Rated",
           key: 2,
-          children: <RatedList />,
+          children: <RatedList ratedArray={ratedArray} />,
         },
       ]}
     />

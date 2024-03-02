@@ -7,36 +7,46 @@
 /* eslint-disable no-console */
 /* eslint-disable react/function-component-definition */
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useCallback } from "react";
 import { List, Flex, Pagination, Modal } from "antd";
 import debounce from "lodash/debounce";
 import CardItem from "../card-item/card-item";
 import SpinComponent from "../spin-component/spin-component";
 import AlertComponent from "../AlertComponent/AlertComponent";
+import TmdbService from "../../tmdb-service/TmdbService";
 import "../../style/list-cards.css";
 import "../../style/pagination.css";
 
 // eslint-disable-next-line react/prop-types
-const ListCards = ({ query }) => {
+const ListCards = ({ query, onChangeValue, ratedArray }) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const tmdbService = new TmdbService();
+
   const debounceFetch = useCallback(
     debounce((value, page) => {
-      fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=80f2e1c394f284ce6b859064a45ac6a0&page=${page}&query=${value}`,
-      )
-        .then((response) => {
-          if (response.status >= 200 && response.status <= 299) {
-            return response.json();
-          } else throw new Error();
-        })
+      tmdbService
+        .getSearchMovie(value, page)
         .then((data) => {
-          console.log(data);
-          setMovies(data.results);
+          console.log(ratedArray);
+          const updatedMovies = data.results.map((movie) => {
+            const ratedMovie = ratedArray.find(
+              (rated) => rated.id === movie.id,
+            );
+            if (ratedMovie) {
+              return { ...movie, vote_average: ratedMovie.value };
+            } else {
+              return movie;
+            }
+          });
+          setMovies(updatedMovies);
           setTotal(data.total_results);
           setLoading(false);
         })
@@ -46,7 +56,7 @@ const ListCards = ({ query }) => {
           setShowAlert(true);
         });
     }, 2000),
-    [],
+    [ratedArray],
   );
 
   useEffect(() => {
@@ -115,6 +125,8 @@ const ListCards = ({ query }) => {
               desc={shortenDedcription(item.overview)}
               releaseDate={item.release_date}
               genresIds={item.genre_ids}
+              rating={item.vote_average}
+              onChangeValue={onChangeValue}
             />
           </List.Item>
         )}

@@ -4,6 +4,8 @@
 import React, { useState } from "react";
 import { Input } from "antd";
 
+import "../../style/search.css";
+
 const Search = ({ input, setInput }) => {
   const handleChange = (event) => {
     setInput(event.target.value);
@@ -11,15 +13,9 @@ const Search = ({ input, setInput }) => {
 
   return (
     <Input
+      className="search"
       value={input}
       onChange={handleChange}
-      style={{
-        height: "45px",
-        fontSize: "16px",
-        margin: "10px 0 30px 0",
-        borderRadius: "3px",
-        border: "1px solid #d9d9d9",
-      }}
       placeholder="Type to search..."
     />
   );

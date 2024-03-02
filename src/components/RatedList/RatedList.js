@@ -9,37 +9,23 @@ import SpinComponent from "../spin-component/spin-component";
 import CardItem from "../card-item/card-item";
 import AlertComponent from "../AlertComponent/AlertComponent";
 import { Context } from "../Context/context";
+import TmdbService from "../../tmdb-service/TmdbService";
 import "../../style/list-cards.css";
 import "../../style/pagination.css";
 
-export default function RatedList() {
+export default function RatedList({ ratedArray }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const guestSessionId = useContext(Context);
+  const { guestSessionId } = useContext(Context);
+  const tmdbService = new TmdbService();
 
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MGYyZTFjMzk0ZjI4NGNlNmI4NTkwNjRhNDVhYzZhMCIsInN1YiI6IjY1YTEyM2FhMTk2OTBjMDEzMThhYzY0MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rMoCg9yFO9XBL_LKXVC_Nb4J4mbjbqQBduC4RzS7pdc",
-    },
-  };
-
-  const getRatedMovies = (id, page) => {
-    fetch(
-      `https://api.themoviedb.org/3/account/{account_id}/rated/movies?api_key=80f2e1c394f284ce6b859064a45ac6a0&page=${page}&guest_session_id=${id}`,
-      options,
-    )
-      .then((response) => {
-        if (response.status >= 200 && response.status <= 299) {
-          return response.json();
-        } else throw new Error();
-      })
+  useEffect(() => {
+    tmdbService
+      .getRatedMovies(guestSessionId, currentPage)
       .then((data) => {
         console.log(data);
         setMovies(data.results);
@@ -47,15 +33,11 @@ export default function RatedList() {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.text);
         setLoading(false);
         setShowAlert(true);
       });
-  };
-
-  useEffect(() => {
-    getRatedMovies(guestSessionId, currentPage);
-  }, [currentPage]);
+  }, [ratedArray, currentPage]);
 
   const onChange = (page) => {
     setLoading(true);

@@ -11,3 +11,9 @@
   min-height: 100vh;
   padding: 24px;
 }
+
+@media all and (max-width: 718px) {
+  .app__content {
+    padding: 0px;
+  }
+}

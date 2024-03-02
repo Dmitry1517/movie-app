@@ -8,5 +8,22 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20;
+  padding: 20px;
+}
+
+.card__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card__title {
+  margin: 0px;
+  width: 70%;
 }
